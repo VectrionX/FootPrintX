@@ -3,7 +3,8 @@
 
 **FootprintX** is a professional-grade, passive OSINT (Open-Source Intelligence) web tool designed for investigators, journalists, and security researchers. It automates the generation of advanced search engine dorks to uncover digital footprints across platforms without ever touching target APIs directly.
 
-![FootprintX Hero Screenshot](https://github.com/SuperMag99/footprintx/blob/main/components/Screenshot%202025-12-20%20212858.png)
+![FootprintX Hero Screenshot](https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000)
+*(Replace the URL above with a real screenshot of your app once hosted or committed to your repo)*
 
 ## 🎯 Features
 
@@ -30,7 +31,7 @@ Ensure you have [Node.js](https://nodejs.org/) installed.
 npm install
 ```
 
-### 3. Set Up Environment Variables ( Only if you want to use Google Gemini Feature )
+### 3. Set Up Environment Variables
 Create a `.env` file in the root directory and add your Google Gemini API Key to enable the Smart Assistant:
 ```env
 API_KEY=your_gemini_api_key_here
@@ -68,6 +69,16 @@ The tool will generate categorized sections of search queries. Each query includ
 
 ### Step 4: Use the Smart Assistant
 If you're stuck or need deeper insights, scroll to the bottom of any module and ask the **AI Smart Assistant** for specialized reconnaissance strategies or to explain a complex search pattern.
+
+---
+
+## 📸 Screenshots
+
+### Homepage
+![Homepage](https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1000)
+
+### Dork Generation Module
+![Module UI](https://images.unsplash.com/photo-1510511459019-5dee211c6757?auto=format&fit=crop&q=80&w=1000)
 
 ---
 
