@@ -8,7 +8,7 @@ interface InitialDisclaimerPopupProps {
 const InitialDisclaimerPopup: React.FC<InitialDisclaimerPopupProps> = ({ onAccept }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#111827] border border-blue-500/20 rounded-3xl max-w-xl w-full p-8 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+      <div className="bg-[#111827] border border-blue-500/20 rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         
         <div className="relative z-10">

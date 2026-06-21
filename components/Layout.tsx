@@ -138,17 +138,28 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
 
         {/* Scrollable Main Content */}
         <main className="flex-1 overflow-y-auto p-4 xl:p-10 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <div className="xl:hidden mb-6 mt-2 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h1>
+              <p className="text-slate-400 text-sm mt-1">Overview and controls</p>
+            </div>
+            <button className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#1F2937]"></span>
+            </button>
+          </div>
           <div className="max-w-7xl mx-auto w-full pb-10">
             {children}
           </div>
           
           {/* Footer - Integrated into scroll view */}
-          <footer className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 pb-8 px-4 xl:px-0">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
+          <footer className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 pb-8 px-4 xl:px-0 gap-4 md:gap-0">
+            <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-center md:text-left">
               <span className="font-semibold text-slate-400">FootprintX</span>
+              <span className="hidden md:inline">•</span>
               <span>© 2025 Open Source Initiative</span>
             </div>
-            <div className="flex gap-6">
+            <div className="flex gap-4 md:gap-6">
               <a href="https://github.com/VectrionX" target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors flex items-center gap-1"><Github className="w-3 h-3" /> GitHub</a>
               <a href="https://www.linkedin.com/in/mag99/" target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors flex items-center gap-1"><Linkedin className="w-3 h-3" /> LinkedIn</a>
             </div>

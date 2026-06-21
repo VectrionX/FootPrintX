@@ -63,7 +63,7 @@ const App: React.FC = () => {
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Welcome Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-gradient-to-r from-blue-900/40 to-slate-900 border border-blue-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
+        <div className="lg:col-span-2 bg-gradient-to-r from-blue-900/40 to-slate-900 border border-blue-500/20 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
              <div className="flex items-center gap-2 mb-4">
@@ -72,7 +72,7 @@ const App: React.FC = () => {
              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
                Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">FootprintX</span>
              </h1>
-             <p className="text-slate-400 text-lg max-w-xl leading-relaxed">
+             <p className="text-slate-400 text-base md:text-lg max-w-xl leading-relaxed">
                Advanced passive intelligence gathering. Generate surgical search engine queries without touching target infrastructure.
              </p>
           </div>
@@ -113,7 +113,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Modules Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         <DashboardCard 
            title="Instagram" 
            subtitle="Profile & Tagged" 
@@ -173,10 +173,10 @@ const App: React.FC = () => {
 
   const renderX = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-sky-500/10 transition-colors duration-1000"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-1">
              <div className="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-4 border border-sky-500/20">
                <Twitter className="w-8 h-8 text-sky-500" />
@@ -221,10 +221,10 @@ const App: React.FC = () => {
 
   const renderLinkedIn = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-600/10 transition-colors duration-1000"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-1">
              <div className="w-14 h-14 bg-blue-600/10 rounded-2xl flex items-center justify-center mb-4 border border-blue-600/20">
                <Linkedin className="w-8 h-8 text-blue-500" />
@@ -279,10 +279,10 @@ const App: React.FC = () => {
 
   const renderEmail = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-colors duration-1000"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-1">
              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 border border-emerald-500/20">
                <Mail className="w-8 h-8 text-emerald-500" />
@@ -326,10 +326,10 @@ const App: React.FC = () => {
 
   const renderInsta = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-pink-500/10 transition-colors duration-1000"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-1">
              <div className="w-14 h-14 bg-pink-500/10 rounded-2xl flex items-center justify-center mb-4 border border-pink-500/20">
                <Instagram className="w-8 h-8 text-pink-500" />
@@ -374,10 +374,10 @@ const App: React.FC = () => {
 
   const renderPerson = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-colors duration-1000"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-1">
              <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/20">
                <User className="w-8 h-8 text-indigo-400" />
@@ -441,7 +441,7 @@ const App: React.FC = () => {
 
   const renderAbout = () => (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div className="bg-[#111827] border border-white/5 rounded-3xl p-10 shadow-2xl">
+      <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-10 shadow-2xl">
         <div className="flex items-center gap-4 mb-8">
            <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <Info className="w-8 h-8 text-purple-400" />
