@@ -1,9 +1,8 @@
-
 export enum Engine {
   GOOGLE = 'Google',
   BING = 'Bing',
   YANDEX = 'Yandex',
-  ALL = 'Multi-Engine'
+  ALL = 'Multi-Engine',
 }
 
 export interface Dork {
@@ -21,4 +20,12 @@ export interface DorkCategory {
   dorks: Dork[];
 }
 
-export type ViewState = 'HOME' | 'INSTA' | 'PERSON' | 'X' | 'LINKEDIN' | 'EMAIL' | 'ABOUT' | 'COPYRIGHT';
+export interface InvestigationContext {
+  caseName: string;
+  authorization: string;
+  scope: string;
+  notes: string;
+  authorizedUseConfirmed: boolean;
+}
+
+export type ViewState = 'HOME' | 'INSTA' | 'PERSON' | 'X' | 'LINKEDIN' | 'EMAIL' | 'ABOUT';
