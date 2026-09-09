@@ -54,4 +54,32 @@ describe('advanced local query preparation', () => {
     expect(prepared.some((dork) => dork.query.includes('site:x.com/northwind'))).toBe(true);
     expect(prepared.some((dork) => dork.query.includes('-site:x.com'))).toBe(true);
   });
+
+  it.each([
+    ['Instagram', () => generateInstaDorks('northwind OR password'), () => generateInstaDorks('northwind"\\nleak')],
+    ['X', () => generateXDorks('northwind OR password'), () => generateXDorks('northwind:private')],
+    ['LinkedIn name', () => generateLinkedInDorks('Ada OR password', 'Northwind Labs'), () => generateLinkedInDorks('Ada Lovelace', 'Northwind OR leak')],
+    ['Email', () => generateEmailDorks('ada@example.com OR password'), () => generateEmailDorks('ada"@example.com')],
+  ])('rejects query-language injection in %s inputs', (_family, ...generators) => {
+    for (const generate of generators) {
+      expect(queries(generate())).toEqual([]);
+    }
+  });
+
+  it('rejects platform-invalid handles and email/domain syntax', () => {
+    expect(generateInstaDorks('bad handle')).toEqual([]);
+    expect(generateXDorks('this_handle_is_too_long')).toEqual([]);
+    expect(generateEmailDorks('ada@@example.com')).toEqual([]);
+    expect(generateEmailDorks('ada@example.com/path')).toEqual([]);
+  });
+
+  it('does not let adversarial input add reserved terms to any generated query', () => {
+    const adversarialInputs = [
+      ...queries(generateInstaDorks('"password" OR leak')),
+      ...queries(generateXDorks('private-access')),
+      ...queries(generateLinkedInDorks('Ada\nLovelace', 'credential dump')),
+      ...queries(generateEmailDorks('harvest@example.com')),
+    ];
+    expect(adversarialInputs).toEqual([]);
+  });
 });

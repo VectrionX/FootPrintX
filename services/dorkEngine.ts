@@ -1,7 +1,26 @@
 import { Dork, DorkCategory, Engine } from '../types';
 
 const quoted = (value: string) => `"${value.trim()}"`;
-const withoutAt = (value: string) => value.replace('@', '').trim();
+
+// Reject untrusted query syntax at one service-level boundary.
+const unsafeInputToken = /\b(?:and|or|not|site|inurl|intitle|password|leak|private|access|credential|breach|exploit|login|dump|scrap(?:e|ing|ed)?|unauthori[sz](?:ed|ation)|collect(?:ion|ed|ing)?|harvest|crawl)\b/iu;
+const queryMeta = /[\u0000-\u001f\u007f"\\:()[\]{}|*?~^<>+=/]/u;
+
+const normalizeText = (value: unknown, pattern: RegExp): string | null => {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().replace(/\s+/gu, ' ');
+  if (!normalized || queryMeta.test(normalized) || unsafeInputToken.test(normalized) || !pattern.test(normalized)) return null;
+  return normalized;
+};
+
+const normalizeHandle = (value: unknown, platform: 'instagram' | 'x'): string | null => {
+  if (typeof value !== 'string') return null;
+  const candidate = value.trim().replace(/^@/u, '');
+  return normalizeText(candidate, platform === 'instagram' ? /^[A-Za-z0-9._]{1,30}$/u : /^[A-Za-z0-9_]{1,15}$/u);
+};
+
+const normalizeName = (value: unknown): string | null => normalizeText(value, /^[\p{L}\p{N}][\p{L}\p{N} .,'&-]*$/u);
+const normalizeEmail = (value: unknown): string | null => normalizeText(value, /^[A-Za-z0-9.!#$%&'*=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/u);
 const enrich = (categories: Array<Omit<DorkCategory, 'dorks'> & { dorks: Array<Omit<Dork, 'purpose' | 'inputProvenance' | 'limitation'>> }>): DorkCategory[] => categories.map(category => ({ ...category, dorks: category.dorks.map(dork => ({ ...dork, purpose: category.explanation, inputProvenance: 'Input supplied in this browser session; no external source was consulted.', limitation: 'Provider indexing, identity, and results are not verified by FootprintX.' })) }));
 
 /**
@@ -9,7 +28,7 @@ const enrich = (categories: Array<Omit<DorkCategory, 'dorks'> & { dorks: Array<O
  * credentials, breach sources, private systems, exploit discovery, and automated collection.
  */
 export const generateInstaDorks = (username: string): DorkCategory[] => {
-  const handle = withoutAt(username);
+  const handle = normalizeHandle(username, 'instagram');
   if (!handle) return [];
   return enrich([{
     id: 'instagram-public-references', title: 'Instagram: profile and public references',
@@ -26,7 +45,7 @@ export const generateInstaDorks = (username: string): DorkCategory[] => {
 };
 
 export const generateXDorks = (username: string): DorkCategory[] => {
-  const handle = withoutAt(username);
+  const handle = normalizeHandle(username, 'x');
   if (!handle) return [];
   return enrich([{
     id: 'x-public-references', title: 'X: profile and public references',
@@ -43,9 +62,11 @@ export const generateXDorks = (username: string): DorkCategory[] => {
 };
 
 export const generateLinkedInDorks = (name: string, company = ''): DorkCategory[] => {
-  const fullName = name.trim();
+  const fullName = normalizeName(name);
   if (!fullName) return [];
-  const companyTerm = company.trim() ? ` ${quoted(company)}` : '';
+  const normalizedCompany = company ? normalizeName(company) : null;
+  if (company && !normalizedCompany) return [];
+  const companyTerm = normalizedCompany ? ` ${quoted(normalizedCompany)}` : '';
   return enrich([{
     id: 'professional-public-references', title: 'Professional identity and organization context',
     explanation: 'Use these public-reference pivots to corroborate an authorized professional context; search results are not identity proof.',
@@ -60,8 +81,8 @@ export const generateLinkedInDorks = (name: string, company = ''): DorkCategory[
 };
 
 export const generateEmailDorks = (email: string): DorkCategory[] => {
-  const address = email.trim();
-  if (!address || !address.includes('@')) return [];
+  const address = normalizeEmail(email);
+  if (!address) return [];
   const domain = address.split('@')[1] ?? '';
   return enrich([{
     id: 'email-public-references', title: 'Email: public references and domain context',
@@ -77,7 +98,7 @@ export const generateEmailDorks = (email: string): DorkCategory[] => {
 };
 
 export const generatePersonDorks = (firstName: string, lastName: string, options: { variations: boolean }): DorkCategory[] => {
-  const first = firstName.trim(); const last = lastName.trim();
+  const first = normalizeName(firstName); const last = normalizeName(lastName);
   if (!first || !last) return [];
   const fullName = `${first} ${last}`;
   const categories: DorkCategory[] = enrich([{
