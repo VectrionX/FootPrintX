@@ -6,7 +6,7 @@ FootprintX is a **client-side OSINT search-query workbench** for authorized, sco
 
 - Records a local case name, authorization basis, approved scope, and investigator notes.
 - Requires an authorized-use acknowledgement before query previews are prepared.
-- Produces bounded, public-reference search-query previews for selected inputs.
+- Produces advanced but bounded, public-reference search-query previews for each supported input across Google, Bing, and Yandex. Each query states its purpose; no credential, breach, private-source, exploit, or automated-collection query is generated.
 - Lets the investigator copy a query, export the current local record as JSON, or deliberately open a named provider after a confirmation screen.
 
 ## What it does not do
