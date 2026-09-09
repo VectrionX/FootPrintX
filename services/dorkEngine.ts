@@ -1,7 +1,8 @@
-import { DorkCategory, Engine } from '../types';
+import { Dork, DorkCategory, Engine } from '../types';
 
 const quoted = (value: string) => `"${value.trim()}"`;
 const withoutAt = (value: string) => value.replace('@', '').trim();
+const enrich = (categories: Array<Omit<DorkCategory, 'dorks'> & { dorks: Array<Omit<Dork, 'purpose' | 'inputProvenance' | 'limitation'>> }>): DorkCategory[] => categories.map(category => ({ ...category, dorks: category.dorks.map(dork => ({ ...dork, purpose: category.explanation, inputProvenance: 'Input supplied in this browser session; no external source was consulted.', limitation: 'Provider indexing, identity, and results are not verified by FootprintX.' })) }));
 
 /**
  * Produces public-search query previews only. Queries intentionally exclude
@@ -10,7 +11,7 @@ const withoutAt = (value: string) => value.replace('@', '').trim();
 export const generateInstaDorks = (username: string): DorkCategory[] => {
   const handle = withoutAt(username);
   if (!handle) return [];
-  return [{
+  return enrich([{
     id: 'instagram-public-references', title: 'Instagram: profile and public references',
     explanation: 'Use these pivots to review public, indexed profile references and third-party mentions. They do not retrieve Instagram content.',
     dorks: [
@@ -19,14 +20,15 @@ export const generateInstaDorks = (username: string): DorkCategory[] => {
       { id: 'instagram-profile-yandex', title: 'Profile reference (Yandex)', query: `site:instagram.com/${handle}`, description: 'Yandex preview for independently indexed public profile references.', engine: Engine.YANDEX },
       { id: 'instagram-external-mentions', title: 'External handle mentions', query: `${quoted(`@${handle}`)} -site:instagram.com`, description: 'Public pages that mention the handle outside Instagram.', engine: Engine.BING },
       { id: 'instagram-name-reuse', title: 'Public username reuse', query: `${quoted(handle)} -site:instagram.com -site:x.com`, description: 'Broad public-reference pivot for possible username reuse; verify identity independently.', engine: Engine.GOOGLE },
+      { id: 'instagram-public-bio', title: 'Public biography references', query: `${quoted(handle)} (bio OR biography OR portfolio) -site:instagram.com`, description: 'Public pages that may describe the supplied handle outside Instagram.', engine: Engine.YANDEX },
     ],
-  }];
+  }]);
 };
 
 export const generateXDorks = (username: string): DorkCategory[] => {
   const handle = withoutAt(username);
   if (!handle) return [];
-  return [{
+  return enrich([{
     id: 'x-public-references', title: 'X: profile and public references',
     explanation: 'Use these pivots to review public, indexed X references and third-party mentions. They do not access an account or collect posts.',
     dorks: [
@@ -35,15 +37,16 @@ export const generateXDorks = (username: string): DorkCategory[] => {
       { id: 'x-profile-yandex', title: 'Profile reference (Yandex)', query: `site:x.com/${handle}`, description: 'Yandex preview for independently indexed public X references.', engine: Engine.YANDEX },
       { id: 'x-external-mentions', title: 'External handle mentions', query: `${quoted(`@${handle}`)} -site:x.com`, description: 'Public pages that mention the handle outside X.', engine: Engine.BING },
       { id: 'x-username-reuse', title: 'Public username reuse', query: `${quoted(handle)} -site:x.com -site:twitter.com`, description: 'Broad public-reference pivot for possible username reuse; verify identity independently.', engine: Engine.GOOGLE },
+      { id: 'x-public-bio', title: 'Public biography references', query: `${quoted(handle)} (bio OR biography OR portfolio) -site:x.com -site:twitter.com`, description: 'Public pages that may describe the supplied handle outside X.', engine: Engine.YANDEX },
     ],
-  }];
+  }]);
 };
 
 export const generateLinkedInDorks = (name: string, company = ''): DorkCategory[] => {
   const fullName = name.trim();
   if (!fullName) return [];
   const companyTerm = company.trim() ? ` ${quoted(company)}` : '';
-  return [{
+  return enrich([{
     id: 'professional-public-references', title: 'Professional identity and organization context',
     explanation: 'Use these public-reference pivots to corroborate an authorized professional context; search results are not identity proof.',
     dorks: [
@@ -53,14 +56,14 @@ export const generateLinkedInDorks = (name: string, company = ''): DorkCategory[
       { id: 'professional-mentions', title: 'Professional web mentions', query: `${quoted(fullName)}${companyTerm} (speaker OR author OR interview OR conference)`, description: 'Public web references relevant to professional activity.', engine: Engine.GOOGLE },
       { id: 'organization-mentions', title: 'Organization-context mentions', query: `${quoted(fullName)}${companyTerm} -site:linkedin.com`, description: 'Public references outside LinkedIn that use the supplied context.', engine: Engine.BING },
     ],
-  }];
+  }]);
 };
 
 export const generateEmailDorks = (email: string): DorkCategory[] => {
   const address = email.trim();
   if (!address || !address.includes('@')) return [];
   const domain = address.split('@')[1] ?? '';
-  return [{
+  return enrich([{
     id: 'email-public-references', title: 'Email: public references and domain context',
     explanation: 'Use these pivots only for authorized public-reference review. They deliberately exclude credential, breach, and private-source queries.',
     dorks: [
@@ -70,14 +73,14 @@ export const generateEmailDorks = (email: string): DorkCategory[] => {
       { id: 'email-domain-context', title: 'Organization-domain reference', query: `${quoted(address)} site:${domain}`, description: 'Public references to the authorized address within its stated domain.', engine: Engine.BING },
       { id: 'email-local-part-context', title: 'Address local-part context', query: `${quoted(address.split('@')[0])} site:${domain}`, description: 'Public domain references using the local-part; validate any match independently.', engine: Engine.GOOGLE },
     ],
-  }];
+  }]);
 };
 
 export const generatePersonDorks = (firstName: string, lastName: string, options: { variations: boolean }): DorkCategory[] => {
   const first = firstName.trim(); const last = lastName.trim();
   if (!first || !last) return [];
   const fullName = `${first} ${last}`;
-  const categories: DorkCategory[] = [{
+  const categories: DorkCategory[] = enrich([{
     id: 'person-public-references', title: 'Person: public identity references',
     explanation: 'Use bounded public-reference pivots within the authorized scope. Corroborate results; names are not unique identifiers.',
     dorks: [
@@ -87,10 +90,10 @@ export const generatePersonDorks = (firstName: string, lastName: string, options
       { id: 'person-professional', title: 'Professional references', query: `${quoted(fullName)} (speaker OR author OR conference OR profile)`, description: 'Public professional-reference pivot, not identity resolution.', engine: Engine.GOOGLE },
       { id: 'person-social-context', title: 'Public social-profile references', query: `${quoted(fullName)} (site:linkedin.com/in OR site:x.com OR site:instagram.com)`, description: 'Public social-profile reference pivot; review against authorized context.', engine: Engine.BING },
     ],
-  }];
-  if (options.variations) categories.push({ id: 'person-variation', title: 'Limited name-format variation', explanation: 'One first-initial variation for public-reference review; it is not identity resolution.', dorks: [
+  }]);
+  if (options.variations) categories.push(enrich([{ id: 'person-variation', title: 'Limited name-format variation', explanation: 'One first-initial variation for public-reference review; it is not identity resolution.', dorks: [
     { id: 'person-initial-google', title: 'First-initial variation', query: `"${first.charAt(0)}. ${last}"`, description: 'Google preview for the first-initial name format.', engine: Engine.GOOGLE },
     { id: 'person-initial-yandex', title: 'First-initial variation (Yandex)', query: `"${first.charAt(0)}. ${last}"`, description: 'Yandex preview for the first-initial name format.', engine: Engine.YANDEX },
-  ] });
+  ] }])[0]);
   return categories;
 };

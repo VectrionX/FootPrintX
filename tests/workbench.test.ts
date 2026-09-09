@@ -18,6 +18,9 @@ const categories: DorkCategory[] = [{
     description: 'A query preview.',
     query: '"example"',
     engine: Engine.GOOGLE,
+    purpose: 'Review publicly indexed references.',
+    inputProvenance: 'Case input supplied in this browser session.',
+    limitation: 'Provider indexing and results are not verified by FootprintX.',
   }],
 }];
 
@@ -47,9 +50,30 @@ describe('local export', () => {
     expect(exported).toMatchObject({
       format: 'footprintx-investigation-v1',
       exportedAt: '2026-09-06T12:00:00.000Z',
-      case: { caseName: 'Vendor review', scope: 'example.com' },
+      case: {
+        caseName: 'Vendor review',
+        authorization: 'Written authorization',
+        scope: 'example.com',
+        notes: 'Contact through counsel.',
+        authorizedUseConfirmed: true,
+      },
+      notice: 'This export contains locally prepared search query previews. FootprintX did not run searches or collect results.',
     });
-    expect(exported.queryCategories[0].queries[0]).toEqual({ title: 'Exact mention', query: '"example"', provider: 'Google' });
+    expect(exported.case).toEqual({
+      caseName: 'Vendor review',
+      authorization: 'Written authorization',
+      scope: 'example.com',
+      notes: 'Contact through counsel.',
+      authorizedUseConfirmed: true,
+    });
+    expect(exported.queryCategories[0].queries[0]).toEqual({
+      title: 'Exact mention',
+      query: '"example"',
+      provider: 'Google',
+      purpose: 'Review publicly indexed references.',
+      inputProvenance: 'Case input supplied in this browser session.',
+      limitation: 'Provider indexing and results are not verified by FootprintX.',
+    });
   });
 
   it('uses a safe filename when a case contains punctuation', () => {
