@@ -11,14 +11,12 @@ export interface Dork {
   title: string;
   description: string;
   engine: Engine;
+  purpose: string;
+  inputProvenance: string;
+  limitation: string;
 }
 
-export interface DorkCategory {
-  id: string;
-  title: string;
-  explanation: string;
-  dorks: Dork[];
-}
+export interface DorkCategory { id: string; title: string; explanation: string; dorks: Dork[]; }
 
 export interface InvestigationContext {
   caseName: string;

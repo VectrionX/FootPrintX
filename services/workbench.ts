@@ -11,7 +11,7 @@ export interface InvestigationExport {
   case: InvestigationContext;
   queryCategories: Array<{
     title: string;
-    queries: Array<{ title: string; query: string; provider: Provider['name'] }>;
+    queries: Array<{ title: string; query: string; provider: Provider['name']; purpose: string; inputProvenance: string; limitation: string }>;
   }>;
   notice: string;
 }
@@ -52,6 +52,9 @@ export const buildInvestigationExport = (
       title: dork.title,
       query: dork.query,
       provider: getProvider(dork.engine).name,
+      purpose: dork.purpose,
+      inputProvenance: dork.inputProvenance,
+      limitation: dork.limitation,
     })),
   })),
   notice: 'This export contains locally prepared search query previews. FootprintX did not run searches or collect results.',
