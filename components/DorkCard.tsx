@@ -9,6 +9,7 @@ interface DorkCardProps {
 
 const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
   const [copied, setCopied] = useState(false);
+  const [confirmingProvider, setConfirmingProvider] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(dork.query);
@@ -35,6 +36,8 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
     }
   };
 
+  const providerName = dork.engine === Engine.GOOGLE ? 'Google' : dork.engine === Engine.BING ? 'Bing' : dork.engine === Engine.YANDEX ? 'Yandex' : 'Google';
+
   return (
     <div className="group bg-[#111827] border border-white/5 rounded-2xl p-5 hover:border-blue-500/30 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.05)] flex flex-col h-full">
       <div className="flex items-start justify-between mb-4">
@@ -52,8 +55,10 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
         
         <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
           <button
+            type="button"
             onClick={handleCopy}
-            className={`p-2 rounded-lg transition-all ${
+            aria-label={`Copy ${dork.title} query`}
+            className={`min-h-11 min-w-11 p-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
               copied 
                 ? 'bg-emerald-500/20 text-emerald-400' 
                 : 'hover:bg-white/10 text-slate-400 hover:text-white'
@@ -62,15 +67,9 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           </button>
-          <a
-            href={getSearchUrl()}
-            target="_blank"
-            rel="noreferrer"
-            className="p-2 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg transition-all"
-            title="Execute Search"
-          >
+          <button type="button" onClick={() => setConfirmingProvider(true)} aria-label={`Open query in ${providerName}`} className="min-h-11 min-w-11 p-2 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400" title="Open provider confirmation">
             <ExternalLink className="w-4 h-4" />
-          </a>
+          </button>
         </div>
       </div>
       
@@ -83,6 +82,13 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
           {dork.query}
         </div>
       </div>
+      {confirmingProvider && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3" role="alert">
+        <p className="text-xs text-amber-200">This opens {providerName} and sends the generated query to that provider. No target request is made by FootprintX.</p>
+        <div className="flex flex-wrap gap-2 mt-3">
+          <a href={getSearchUrl()} target="_blank" rel="noreferrer" onClick={() => setConfirmingProvider(false)} className="min-h-11 inline-flex items-center px-3 rounded-lg bg-amber-500 text-black text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Continue to {providerName}</a>
+          <button type="button" onClick={() => setConfirmingProvider(false)} className="min-h-11 px-3 rounded-lg text-xs text-slate-300 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Cancel</button>
+        </div>
+      </div>}
     </div>
   );
 };

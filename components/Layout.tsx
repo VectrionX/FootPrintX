@@ -46,7 +46,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
             <button
               key={item.id}
               onClick={() => setView(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
+              aria-current={currentView === item.id ? 'page' : undefined}
+              className={`w-full min-h-11 flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
                 currentView === item.id 
                   ? 'bg-blue-600/10 text-blue-400 font-medium shadow-[0_0_20px_rgba(37,99,235,0.1)] border border-blue-500/10' 
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -86,14 +87,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
         {/* Mobile Header */}
         <header className="xl:hidden sticky top-0 z-50 bg-[#0B0E14]/80 backdrop-blur-xl border-b border-white/10">
           <div className="px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2" onClick={() => setView('HOME')}>
+            <button type="button" aria-label="Go to FootprintX dashboard" className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg" onClick={() => setView('HOME')}>
               <div className="p-1.5 bg-blue-600 rounded-lg">
                 <Terminal className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold text-white">FootprintX</span>
-            </div>
-            <button className="p-2 text-slate-400 hover:text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X /> : <Menu />}
+            </button>
+            <button type="button" aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={isMenuOpen} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
             </button>
           </div>
           {isMenuOpen && (
@@ -102,7 +103,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
                 <button
                   key={item.id}
                   onClick={() => { setView(item.id); setIsMenuOpen(false); }}
-                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all ${
+                  aria-current={currentView === item.id ? 'page' : undefined}
+                  className={`flex items-center gap-3 w-full min-h-11 px-4 py-3 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
                     currentView === item.id ? 'bg-blue-600/20 text-blue-400' : 'text-slate-400'
                   }`}
                 >
@@ -117,7 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
         {/* Desktop Topbar */}
         <header className="hidden xl:flex h-24 items-center justify-between px-10 pt-4">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h1>
+            <h2 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h2>
             <p className="text-slate-400 text-sm mt-1">Overview and controls</p>
           </div>
           <div className="flex items-center gap-4">
@@ -140,7 +142,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
         <main className="flex-1 overflow-y-auto p-4 xl:p-10 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
           <div className="xl:hidden mb-6 mt-2 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h1>
+              <h2 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h2>
               <p className="text-slate-400 text-sm mt-1">Overview and controls</p>
             </div>
             <button className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">

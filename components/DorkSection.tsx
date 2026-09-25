@@ -14,8 +14,11 @@ const DorkSection: React.FC<DorkSectionProps> = ({ category }) => {
   return (
     <div className="space-y-4">
       <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls={`dork-list-${category.id}`}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-5 bg-[#1F2937] border border-white/5 rounded-2xl hover:bg-[#374151] transition-all group shadow-lg"
+        className="w-full min-h-11 flex items-center justify-between p-5 bg-[#1F2937] border border-white/5 rounded-2xl hover:bg-[#374151] transition-all group shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
       >
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
@@ -36,7 +39,7 @@ const DorkSection: React.FC<DorkSectionProps> = ({ category }) => {
       </button>
 
       {isOpen && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div id={`dork-list-${category.id}`} className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
           {category.dorks.map((dork) => (
             <DorkCard key={dork.id} dork={dork} />
           ))}

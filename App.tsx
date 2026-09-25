@@ -62,6 +62,7 @@ const App: React.FC = () => {
   const renderHome = () => (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Welcome Card */}
+      <Disclaimer />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-gradient-to-r from-blue-900/40 to-slate-900 border border-blue-500/20 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
