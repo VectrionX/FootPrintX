@@ -131,8 +131,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
                 className="bg-[#1F2937] border border-white/5 rounded-full pl-10 pr-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-64 transition-all"
               />
             </div>
-            <button className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">
-              <Bell className="w-5 h-5" />
+            <button type="button" aria-label="View notifications" className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">
+              <Bell aria-hidden="true" className="w-5 h-5" />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#1F2937]"></span>
             </button>
           </div>
@@ -145,8 +145,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
               <h2 className="text-2xl font-bold text-white tracking-tight">{currentLabel}</h2>
               <p className="text-slate-400 text-sm mt-1">Overview and controls</p>
             </div>
-            <button className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">
-              <Bell className="w-5 h-5" />
+            <button type="button" aria-label="View notifications" className="p-2.5 rounded-full bg-[#1F2937] text-slate-400 hover:text-white hover:bg-[#374151] transition-colors border border-white/5 relative">
+              <Bell aria-hidden="true" className="w-5 h-5" />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#1F2937]"></span>
             </button>
           </div>

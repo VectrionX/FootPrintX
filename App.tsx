@@ -68,10 +68,10 @@ const App: React.FC = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
              <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-500/20">v1.0.0 Stable</span>
+                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-500/20">Local preview</span>
              </div>
              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-               Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">FootprintX</span>
+               Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">FootPrintX</span>
              </h1>
              <p className="text-slate-400 text-base md:text-lg max-w-xl leading-relaxed">
                Advanced passive intelligence gathering. Generate surgical search engine queries without touching target infrastructure.
@@ -88,7 +88,7 @@ const App: React.FC = () => {
             </div>
             <div className="space-y-4">
                <div className="flex justify-between items-center text-sm">
-                 <span className="text-slate-400">Modules Active</span>
+                 <span className="text-slate-400">Query modules</span>
                  <span className="text-white font-mono">5/5</span>
                </div>
                <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
@@ -165,7 +165,7 @@ const App: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                <TipCard title="100% Passive" desc="Pure dork generation. No API calls or logins required." />
                <TipCard title="Engine Optimized" desc="Queries tuned for Google, Bing, and Yandex syntax." />
-               <TipCard title="Zero Logging" desc="Your data never leaves your browser memory." />
+               <TipCard title="Browser memory" desc="Inputs are used locally during this session and are not submitted by FootPrintX." />
             </div>
          </div>
       </div>
@@ -290,7 +290,7 @@ const App: React.FC = () => {
              </div>
              <h2 className="text-2xl font-bold text-white mb-2">Email Footprint</h2>
              <p className="text-slate-400 text-sm leading-relaxed">
-               Expose email presence, potential breaches, paste-site dumps, and associated profiles.
+               Prepare passive queries for email mentions and public-source indicators; review every result with care.
              </p>
           </div>
 
@@ -385,7 +385,7 @@ const App: React.FC = () => {
              </div>
              <h2 className="text-2xl font-bold text-white mb-2">Person Lookup</h2>
              <p className="text-slate-400 text-sm leading-relaxed">
-               Discover identity footprints, accounts, and docs using first and last names.
+               Prepare name-based queries for public-source review; a match is not proof of identity.
              </p>
           </div>
 
@@ -452,8 +452,8 @@ const App: React.FC = () => {
         
         <div className="prose prose-invert max-w-none text-slate-400 leading-relaxed">
           <p className="text-lg">
-            FootprintX is a professional-grade passive OSINT tool designed for the intelligence community. 
-            It combines modular dork engines with a strict privacy-first architecture, ensuring all processing happens locally.
+            FootPrintX is a browser-local passive OSINT query preparation tool for authorized research.
+            It formats modular search queries without crawling targets or collecting provider results.
           </p>
         </div>
 
@@ -526,15 +526,17 @@ const App: React.FC = () => {
           }} 
         />
       )}
-      <Layout currentView={view} setView={setView}>
-        {view === 'HOME' && renderHome()}
-        {view === 'INSTA' && renderInsta()}
-        {view === 'X' && renderX()}
-        {view === 'LINKEDIN' && renderLinkedIn()}
-        {view === 'EMAIL' && renderEmail()}
-        {view === 'PERSON' && renderPerson()}
-        {view === 'ABOUT' && renderAbout()}
-      </Layout>
+      {hasAcceptedDisclaimer ? (
+        <Layout currentView={view} setView={setView}>
+          {view === 'HOME' && renderHome()}
+          {view === 'INSTA' && renderInsta()}
+          {view === 'X' && renderX()}
+          {view === 'LINKEDIN' && renderLinkedIn()}
+          {view === 'EMAIL' && renderEmail()}
+          {view === 'PERSON' && renderPerson()}
+          {view === 'ABOUT' && renderAbout()}
+        </Layout>
+      ) : <div aria-hidden="true" inert />}
     </>
   );
 };

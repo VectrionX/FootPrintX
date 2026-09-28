@@ -11,10 +11,14 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
   const [copied, setCopied] = useState(false);
   const [confirmingProvider, setConfirmingProvider] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(dork.query);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(dork.query);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
   };
 
   const getEngineBadge = (engine: Engine) => {
@@ -82,10 +86,10 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
           {dork.query}
         </div>
       </div>
-      {confirmingProvider && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3" role="alert">
-        <p className="text-xs text-amber-200">This opens {providerName} and sends the generated query to that provider. No target request is made by FootprintX.</p>
+      {confirmingProvider && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3" role="alertdialog" aria-label={`Confirm opening ${providerName}`} aria-describedby={`provider-warning-${dork.id}`}>
+        <p id={`provider-warning-${dork.id}`} className="text-xs text-amber-200">This opens {providerName} and sends the generated query to that provider. No target request is made by FootPrintX.</p>
         <div className="flex flex-wrap gap-2 mt-3">
-          <a href={getSearchUrl()} target="_blank" rel="noreferrer" onClick={() => setConfirmingProvider(false)} className="min-h-11 inline-flex items-center px-3 rounded-lg bg-amber-500 text-black text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Continue to {providerName}</a>
+          <a href={getSearchUrl()} target="_blank" rel="noreferrer" onClick={() => setConfirmingProvider(false)} aria-label={`Confirm and open query in ${providerName}`} className="min-h-11 inline-flex items-center px-3 rounded-lg bg-amber-500 text-black text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Continue to {providerName}</a>
           <button type="button" onClick={() => setConfirmingProvider(false)} className="min-h-11 px-3 rounded-lg text-xs text-slate-300 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Cancel</button>
         </div>
       </div>}
