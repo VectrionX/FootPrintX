@@ -19,7 +19,7 @@ const InitialDisclaimerPopup: React.FC<InitialDisclaimerPopupProps> = ({ onAccep
     headingRef.current?.focus();
     const dialog = dialogRef.current;
     if (!dialog) return;
-    const focusable = () => Array.from(dialog.querySelectorAll<HTMLElement>('button, input, [href], [tabindex]:not([tabindex="-1"])')).filter((node) => !node.hasAttribute('disabled'));
+    const focusable = (): HTMLElement[] => Array.from(dialog.querySelectorAll('button, input, [href], [tabindex]:not([tabindex="-1"])')).filter((node): node is HTMLElement => node instanceof HTMLElement && !node.hasAttribute('disabled'));
     const trapFocus = (event: KeyboardEvent) => {
       if (event.key === 'Escape') event.preventDefault();
       if (event.key !== 'Tab') return;
@@ -27,6 +27,12 @@ const InitialDisclaimerPopup: React.FC<InitialDisclaimerPopupProps> = ({ onAccep
       if (nodes.length === 0) return;
       const first = nodes[0];
       const last = nodes[nodes.length - 1];
+      if (!first || !last) return;
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();

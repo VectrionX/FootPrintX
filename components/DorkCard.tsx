@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dork, Engine } from '../types';
 import { Copy, Check, ExternalLink, Search } from 'lucide-react';
 
@@ -10,6 +10,29 @@ interface DorkCardProps {
 const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
   const [copied, setCopied] = useState(false);
   const [confirmingProvider, setConfirmingProvider] = useState(false);
+  const cancelProviderRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!confirmingProvider) return;
+    cancelProviderRef.current?.focus();
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setConfirmingProvider(false);
+        openerRef.current?.focus();
+      }
+      if (event.key === 'Tab') {
+        const nodes = Array.from(document.querySelectorAll<HTMLElement>('[role="alertdialog"] button, [role="alertdialog"] a'));
+        const first = nodes[0];
+        const last = nodes[nodes.length - 1];
+        if (first && last && event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (first && last && !event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', dismiss);
+    return () => document.removeEventListener('keydown', dismiss);
+  }, [confirmingProvider]);
 
   const handleCopy = async () => {
     try {
@@ -71,7 +94,7 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           </button>
-          <button type="button" onClick={() => setConfirmingProvider(true)} aria-label={`Open query in ${providerName}`} className="min-h-11 min-w-11 p-2 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400" title="Open provider confirmation">
+          <button ref={openerRef} type="button" onClick={(event) => { openerRef.current = event.currentTarget; setConfirmingProvider(true); }} aria-label={`Open query in ${providerName}`} className="min-h-11 min-w-11 p-2 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400" title="Open provider confirmation">
             <ExternalLink className="w-4 h-4" />
           </button>
         </div>
@@ -86,11 +109,11 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
           {dork.query}
         </div>
       </div>
-      {confirmingProvider && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3" role="alertdialog" aria-label={`Confirm opening ${providerName}`} aria-describedby={`provider-warning-${dork.id}`}>
+      {confirmingProvider && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3" role="alertdialog" aria-modal="true" aria-label={`Confirm opening ${providerName}`} aria-describedby={`provider-warning-${dork.id}`}>
         <p id={`provider-warning-${dork.id}`} className="text-xs text-amber-200">This opens {providerName} and sends the generated query to that provider. No target request is made by FootPrintX.</p>
         <div className="flex flex-wrap gap-2 mt-3">
           <a href={getSearchUrl()} target="_blank" rel="noreferrer" onClick={() => setConfirmingProvider(false)} aria-label={`Confirm and open query in ${providerName}`} className="min-h-11 inline-flex items-center px-3 rounded-lg bg-amber-500 text-black text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Continue to {providerName}</a>
-          <button type="button" onClick={() => setConfirmingProvider(false)} className="min-h-11 px-3 rounded-lg text-xs text-slate-300 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Cancel</button>
+          <button ref={cancelProviderRef} type="button" onClick={() => { setConfirmingProvider(false); openerRef.current?.focus(); }} className="min-h-11 px-3 rounded-lg text-xs text-slate-300 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Cancel</button>
         </div>
       </div>}
     </div>

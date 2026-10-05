@@ -74,7 +74,7 @@ const App: React.FC = () => {
                Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">FootPrintX</span>
              </h1>
              <p className="text-slate-400 text-base md:text-lg max-w-xl leading-relaxed">
-               Advanced passive intelligence gathering. Generate surgical search engine queries without touching target infrastructure.
+               Prepare targeted passive search queries locally without touching target infrastructure.
              </p>
           </div>
         </div>
@@ -141,7 +141,7 @@ const App: React.FC = () => {
         />
         <DashboardCard 
            title="Email OSINT" 
-           subtitle="Breach & Pivots" 
+           subtitle="Email references"
            icon={<Mail className="w-6 h-6 text-emerald-500" />} 
            onClick={() => setView('EMAIL')} 
            color="hover:border-emerald-500/50" 
@@ -149,7 +149,7 @@ const App: React.FC = () => {
         />
         <DashboardCard 
            title="Person Search" 
-           subtitle="Identity & Docs" 
+           subtitle="Name references"
            icon={<User className="w-6 h-6 text-indigo-400" />} 
            onClick={() => setView('PERSON')} 
            color="hover:border-indigo-400/50" 

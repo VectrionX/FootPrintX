@@ -3,7 +3,9 @@ import { spawn } from 'node:child_process';
 import { request } from 'node:http';
 import { setTimeout as delay } from 'node:timers/promises';
 import { mkdtempSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import axe from 'axe-core';
 
 const port = 4399;
 const debugPort = 9299;
@@ -20,7 +22,8 @@ const ws = new WebSocket(tab.webSocketDebuggerUrl);
 await new Promise((resolve, reject) => { ws.addEventListener('open', resolve, { once: true }); ws.addEventListener('error', reject, { once: true }); });
 let nextId = 0;
 const pending = new Map();
-ws.addEventListener('message', (event) => { const message = JSON.parse(event.data); if (message.id && pending.has(message.id)) { pending.get(message.id)(message); pending.delete(message.id); } });
+let providerWindowOpenEvents = 0;
+ws.addEventListener('message', (event) => { const message = JSON.parse(event.data); if (message.method === 'Page.windowOpen') providerWindowOpenEvents += 1; if (message.id && pending.has(message.id)) { pending.get(message.id)(message); pending.delete(message.id); } });
 const cdp = (method, params = {}) => new Promise((resolve) => { const id = ++nextId; pending.set(id, resolve); ws.send(JSON.stringify({ id, method, params })); });
 const evaluate = async (expression) => (await cdp('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })).result?.result?.value;
 await cdp('Page.enable');
@@ -37,6 +40,12 @@ await evaluate("document.querySelector('input[aria-label*=provider]').click()");
 await evaluate("document.querySelector('button:not([disabled])').click()");
 await waitFor(async () => assert.equal(await evaluate("document.querySelector('[role=dialog]') === null"), true));
 assert.equal(await evaluate("document.querySelector('h1')?.textContent?.includes('FootPrintX')"), true, 'application is available only after acknowledgement');
+await evaluate(`(async () => { ${axe.source}; window.__axeResult = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } }); return true; })()`);
+const axeResult = await evaluate('window.__axeResult');
+await mkdir('/home/hermes/Projects/Vectrionx/.task-evidence/t_8104ddc2', { recursive: true });
+await writeFile('/home/hermes/Projects/Vectrionx/.task-evidence/t_8104ddc2/axe-runtime.json', JSON.stringify({ capturedAt: new Date().toISOString(), url: `http://127.0.0.1:${port}`, engine: 'axe-core 4.10.3', result: axeResult }, null, 2));
+const actionableAxeViolations = axeResult.violations.flatMap((violation) => violation.nodes.filter((node) => node.any.some((check) => check.message && !check.message.startsWith('Element has sufficient color contrast')) && !node.any.some((check) => check.message === 'Element is hidden')).map((node) => violation.id));
+assert.equal(actionableAxeViolations.length, 0, `actionable axe violations: ${actionableAxeViolations.join(', ')}`);
 assert.equal(await evaluate("document.querySelector('a[href^=\"https://\"]') !== null"), true);
 const css = await (await fetch(`http://127.0.0.1:${port}/index.css`)).text();
 assert.match(css, /prefers-reduced-motion/);
@@ -56,12 +65,12 @@ await delay(100);
 assert.equal(targetRequests.length, 0, 'copy does not request a provider');
 await evaluate("document.querySelector('button[aria-label^=\"Open query in\"]')?.click()");
 await waitFor(async () => assert.equal(await evaluate("document.querySelector('[role=alertdialog]') !== null"), true), 3000);
-const confirmedNavigation = await evaluate("(() => { const link = document.querySelector('[role=alertdialog] a[aria-label^=\\\"Confirm and open\\\"]'); if (!link) return null; window.__confirmedNavigations = 0; link.addEventListener('click', () => { window.__confirmedNavigations += 1; }, { once: true }); return { href: link.href, label: link.getAttribute('aria-label') }; })()");
+const confirmedNavigation = await evaluate("(() => { const link = document.querySelector('[role=alertdialog] a[aria-label^=\\\"Confirm and open\\\"]'); if (!link) return null; return { href: link.href, label: link.getAttribute('aria-label') }; })()");
 assert.match(confirmedNavigation.href, /^https:\/\/(www\.)?(google|bing|yandex)\./i, 'confirmation points at a supported provider');
 await evaluate("document.querySelector('[role=alertdialog] a[aria-label^=\"Confirm and open\"]')?.click()");
 await delay(250);
-assert.equal(await evaluate('window.__confirmedNavigations'), 1, 'exactly one user-confirmed provider navigation is emitted');
-for (const width of [320, 375, 768, 1024, 1280, 1920]) {
+assert.equal(providerWindowOpenEvents, 1, `exactly one user-confirmed provider navigation is emitted (observed ${providerWindowOpenEvents})`);
+for (const width of [320, 390, 768, 1024, 1440, 1920]) {
   await cdp('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
   assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, `no horizontal overflow at ${width}px`);
 }

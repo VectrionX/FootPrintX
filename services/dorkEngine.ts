@@ -68,7 +68,7 @@ export const generatePersonDorks = (firstName: string, lastName: string, options
   const dorks: DorkCategory[] = [
     {
       id: 'identity',
-      title: 'General Identity Discovery',
+      title: 'Name query patterns',
       explanation: 'Basic name-based queries to locate primary digital footprints.',
       dorks: [
         { id: 'p1', title: 'Standard Full Name', query: `"${fullName}"`, description: 'Exact match search for the full name.', engine: Engine.ALL },
@@ -225,7 +225,7 @@ export const generateEmailDorks = (email: string): DorkCategory[] => {
     },
     {
       id: 'em_leaks',
-      title: 'Data Breach Indicators',
+      title: 'Exposure-related queries',
       explanation: 'Passive search for email presence in public breach mentions.',
       dorks: [
         { id: 'eml1', title: 'Public Leaks', query: `"${cleanEmail}" "leak" OR "dump" OR "breach"`, description: 'Passive indicator search for leaks.', engine: Engine.GOOGLE },

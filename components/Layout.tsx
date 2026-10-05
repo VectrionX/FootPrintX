@@ -11,6 +11,20 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    if (!isMenuOpen) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', dismiss);
+    return () => document.removeEventListener('keydown', dismiss);
+  }, [isMenuOpen]);
 
   const navItems = [
     { id: 'HOME' as ViewState, label: 'Dashboard', icon: LayoutDashboard },
@@ -35,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
           </div>
           <div>
             <span className="text-xl font-bold text-white tracking-wide block leading-none">FootprintX</span>
-            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Pro Edition</span>
+            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Local query tool</span>
           </div>
         </div>
 
@@ -93,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, setView }) => {
               </div>
               <span className="text-lg font-bold text-white">FootprintX</span>
             </button>
-            <button type="button" aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={isMenuOpen} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button ref={menuButtonRef} type="button" aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMenuOpen} className="min-h-11 min-w-11 p-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
             </button>
           </div>

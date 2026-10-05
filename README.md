@@ -18,6 +18,10 @@ npm run dev
 
 Open the local Vite URL shown in the terminal. The application requires the acknowledgement gate before its controls become available.
 
+## URL contract
+
+The supported public URL is the root (`/`). State-based module navigation remains inside that document; query strings and hash fragments are tolerated and do not change the authorization boundary. There are no public `/about` or module routes: other paths are unsupported and should be treated as not-found by the hosting configuration rather than as implemented pages. The canonical URL is `https://footprintx.vectrionx.com/`.
+
 ## Modules
 
 The current interface prepares query templates for Instagram, X, LinkedIn, email, and person-name research. Generated text is a starting point for analyst review, not evidence of identity, compromise, exposure, or completeness.
