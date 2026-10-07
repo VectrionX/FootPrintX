@@ -4,8 +4,9 @@ import { request } from 'node:http';
 import { createServer } from 'node:net';
 import { setTimeout as delay } from 'node:timers/promises';
 import { mkdtempSync } from 'node:fs';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import axe from 'axe-core';
 
 const getFreePort = () => new Promise((resolve, reject) => {
@@ -66,8 +67,8 @@ await waitFor(async () => assert.equal(await evaluate("document.querySelector('[
 assert.equal(await evaluate("document.querySelector('h1')?.textContent?.includes('FootPrintX')"), true, 'application is available only after acknowledgement');
 await evaluate(`(async () => { ${axe.source}; window.__axeResult = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } }); return true; })()`);
 const axeResult = await evaluate('window.__axeResult');
-await mkdir('.task-evidence/t_12d27c86', { recursive: true });
-await writeFile('.task-evidence/t_12d27c86/axe-runtime.json', JSON.stringify({ capturedAt: new Date().toISOString(), url: `http://127.0.0.1:${port}`, engine: 'axe-core 4.10.3', result: axeResult }, null, 2));
+const runtimeEvidenceDir = mkdtempSync(join(tmpdir(), 'footprintx-axe-'));
+await writeFile(join(runtimeEvidenceDir, 'axe-runtime.json'), JSON.stringify({ capturedAt: new Date().toISOString(), url: `http://127.0.0.1:${port}`, engine: 'axe-core 4.10.3', result: axeResult }, null, 2));
 const actionableAxeViolations = axeResult.violations.flatMap((violation) => violation.nodes.filter((node) => node.any.some((check) => check.message && !check.message.startsWith('Element has sufficient color contrast')) && !node.any.some((check) => check.message === 'Element is hidden')).map((node) => violation.id));
 assert.equal(actionableAxeViolations.length, 0, `actionable axe violations: ${actionableAxeViolations.join(', ')}`);
 assert.equal(await evaluate("document.querySelector('a[href^=\"https://\"]') !== null"), true);
