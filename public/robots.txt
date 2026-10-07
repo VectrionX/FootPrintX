@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://footprintx.vectrionx.com/sitemap.xml

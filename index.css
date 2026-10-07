@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-:focus-visible {
-  outline: 3px solid #60a5fa;
-  outline-offset: 3px;
+/* Keep focus and motion safeguards local to the bundle. */
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+html { background: #0b0e14; }
+body { margin: 0; min-width: 320px; background: #0b0e14; color: #e2e8f0; }
+button, input { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+::selection { background: rgba(59, 130, 246, .45); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .001ms !important; }
 }
-
-body { margin: 0; }
+/* Maintain readable line length and prevent wide query strings from breaking zoom. */
+#root { min-height: 100vh; }
+/* slate-500 is too dim for normal-size text on these dark surfaces. */
+.text-slate-500 { color: #94a3b8; }
+@media (min-width: 640px) { body { font-size: 1rem; } }
+@media (min-width: 1280px) { body { font-size: 1.02rem; } }
