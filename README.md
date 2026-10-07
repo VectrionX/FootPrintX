@@ -1,40 +1,44 @@
-# FootPrintX
+# FootprintX
 
-FootPrintX is a browser-local query preparation tool for authorized, passive OSINT research. It formats search-engine queries from supplied inputs; it does not crawl target infrastructure, call target APIs, collect provider results, correlate identities, or establish attribution.
+FootprintX is a **client-side OSINT search-query workbench** for authorized, scoped investigations. It prepares query previews locally; it is **not** EASM, a scanner, a crawler, a monitoring service, or a live-data collection product.
 
-## Boundaries
+## What it does
 
-- Processing is kept in browser memory during the session.
-- No target request is made while entering data, generating queries, or copying a query.
-- A provider navigation is a separate, visible user-confirmed action. The selected provider receives the query when that navigation occurs.
-- Use only for lawful research with authorization or another valid legal basis. Users remain responsible for provider terms and applicable law.
+- Records a local case name, authorization basis, approved scope, and investigator notes.
+- Requires an authorized-use acknowledgement before query previews are prepared.
+- Produces advanced but bounded, public-reference search-query previews for each supported input across Google, Bing, and Yandex. Each query states its purpose; no credential, breach, private-source, exploit, or automated-collection query is generated.
+- Lets the investigator copy a query, export the current local record as JSON, or deliberately open a named provider after a confirmation screen.
 
-## Run locally
+## What it does not do
+
+- Run a query automatically.
+- Scan, crawl, enumerate, log in to, or contact target systems.
+- Retrieve, store, monitor, correlate, or assess provider search results.
+- Send case data to a FootprintX server. There is no server component.
+- Include breach, credential, private-source, or exploit collection workflows.
+
+## Data and external-provider notice
+
+Case fields and query previews remain in the current browser tab unless you choose to export them. **Export** creates a local JSON download. **Copy** places a query on your local clipboard. **Review & open** first displays the exact query and destination; only after a second deliberate click is the query sent to Google, Bing, or Yandex in a new tab. Those providers' terms, tracking, cookies, and privacy policies apply.
+
+Use only with documented authority and within the defined scope. Public search results are not verification of identity, ownership, or risk.
+
+## Local development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local Vite URL shown in the terminal. The application requires the acknowledgement gate before its controls become available.
+The local Vite server defaults to port `3000`.
 
-## URL contract
+## Quality checks
 
-The supported public URL is the root (`/`). State-based module navigation remains inside that document; query strings and hash fragments are tolerated and do not change the authorization boundary. There are no public `/about` or module routes: other paths are unsupported and should be treated as not-found by the hosting configuration rather than as implemented pages. The canonical URL is `https://footprintx.vectrionx.com/`.
-
-## Modules
-
-The current interface prepares query templates for Instagram, X, LinkedIn, email, and person-name research. Generated text is a starting point for analyst review, not evidence of identity, compromise, exposure, or completeness.
-
-## Verification
+The CI/release gate uses the committed lockfile and runs a production-dependency audit:
 
 ```bash
-npm run build
-npm run test:browser
+npm ci
+npm run verify
 ```
 
-The browser checks cover the acknowledgement gate, keyboard focus containment/restoration, reduced-motion CSS, responsive widths, 200% zoom, axe-core checks, provider egress, and the absence of target requests during generation/copy.
-
-## License
-
-MIT License. Copyright (c) 2025 Mohammad Ghanem.
+`verify` runs tests, TypeScript checking, the production build, and `npm audit --omit=dev --audit-level=high`. The test suite covers the safety-critical local workbench helpers: authorization readiness, provider URL construction, and export structure/filenames.

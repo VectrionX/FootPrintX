@@ -1,29 +1,17 @@
-
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-const Disclaimer: React.FC = () => {
-  return (
-    <div className="bg-[#111827] border border-l-4 border-l-amber-500 border-y-white/5 border-r-white/5 rounded-r-xl p-6 mb-8 shadow-lg">
-      <div className="flex items-start gap-4">
-        <div className="p-2 bg-amber-500/10 rounded-lg">
-          <AlertTriangle className="w-5 h-5 text-amber-500" />
-        </div>
-        <div>
-          <h3 className="text-base font-bold text-white mb-1">Compliance Warning</h3>
-          <div className="text-xs text-slate-400 leading-relaxed">
-            <p className="mb-2">
-              FootprintX generates search queries for <span className="text-amber-400 font-medium">educational and lawful OSINT purposes only</span>. 
-              No infrastructure is scanned. No data is stored.
-            </p>
-            <p className="opacity-80">
-              By using this tool, you agree to adhere to all applicable laws and search engine Terms of Service.
-            </p>
-          </div>
-        </div>
+const Disclaimer: React.FC = () => (
+  <aside aria-label="Authorized-use and provider notice" className="bg-amber-500/5 border border-amber-500/30 rounded-2xl p-5">
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" aria-hidden="true" />
+      <div className="space-y-2 text-sm text-slate-300 leading-relaxed">
+        <h2 className="font-semibold text-amber-200">Authorized use only</h2>
+        <p>Use only where you have documented authority and a defined scope. FootprintX prepares query previews; it does not scan systems, collect results, verify identities, or make live findings.</p>
+        <p>Nothing is sent by FootprintX until you deliberately copy, export, or confirm an external-provider link. Confirming a link sends the displayed query to Google, Bing, or Yandex, which apply their own privacy notices and terms.</p>
       </div>
     </div>
-  );
-};
+  </aside>
+);
 
 export default Disclaimer;

@@ -1,6 +1,10 @@
 {
-  "name": "FootprintX OSINT Generator",
-  "description": "A professional-grade passive OSINT web tool for generating advanced search engine dorks for Instagram usernames and person names. Designed for investigators, journalists, and security researchers.",
+  "name": "FootprintX Local OSINT Query Workbench",
+  "description": "A client-side workbench that prepares scoped OSINT search-query previews for authorized investigations. It does not scan, collect live data, or run searches automatically.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "Local case context and notes",
+    "Explicit external-provider confirmation",
+    "Local JSON export"
+  ]
 }
