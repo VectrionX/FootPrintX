@@ -415,14 +415,11 @@ const App: React.FC = () => {
                 </div>
                 <div className="mt-4 pt-4 border-t border-white/5">
                   <label className="flex items-center gap-3 cursor-pointer group w-fit">
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${options.variations ? 'bg-indigo-500 border-indigo-500' : 'bg-transparent border-slate-600'}`}>
-                       {options.variations && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
-                    </div>
                     <input 
                       type="checkbox" 
                       checked={options.variations}
                       onChange={(e) => setOptions({...options, variations: e.target.checked})}
-                      className="hidden"
+                      className="h-5 w-5 accent-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0E14]"
                     />
                     <span className="text-sm text-slate-400 group-hover:text-white transition-colors">Include name variations</span>
                   </label>

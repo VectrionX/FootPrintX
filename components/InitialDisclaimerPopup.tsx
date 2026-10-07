@@ -41,9 +41,14 @@ const InitialDisclaimerPopup: React.FC<InitialDisclaimerPopupProps> = ({ onAccep
         first.focus();
       }
     };
+    const restoreFocusInsideDialog = () => {
+      if (!dialog.contains(document.activeElement)) headingRef.current?.focus();
+    };
     document.addEventListener('keydown', trapFocus);
+    document.addEventListener('focusin', restoreFocusInsideDialog);
     return () => {
       document.removeEventListener('keydown', trapFocus);
+      document.removeEventListener('focusin', restoreFocusInsideDialog);
       previouslyFocused.current?.focus();
     };
   }, []);
@@ -58,7 +63,7 @@ const InitialDisclaimerPopup: React.FC<InitialDisclaimerPopupProps> = ({ onAccep
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20" aria-hidden="true"><AlertCircle className="w-6 h-6 text-amber-500" /></div>
-            <div><h1 id="gate-title" ref={headingRef} tabIndex={-1} className="text-2xl font-bold text-white tracking-tight">Before you continue</h1><p id="gate-description" className="text-blue-400 text-sm font-medium">Safety and privacy gate · Step {step} of 3</p></div>
+            <div><h1 id="gate-title" ref={headingRef} tabIndex={0} className="text-2xl font-bold text-white tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827]">Before you continue</h1><p id="gate-description" className="text-blue-400 text-sm font-medium">Safety and privacy gate · Step {step} of 3</p></div>
           </div>
           <div className="space-y-4 mb-8 min-h-44">
             {step === 1 && <div className="bg-[#1F2937]/50 rounded-2xl p-4 border border-white/5 flex gap-4 items-start"><Shield className="w-6 h-6 text-emerald-500 shrink-0 mt-1" aria-hidden="true" /><div><h2 className="text-white font-semibold mb-1">Use only with authorization</h2><p className="text-sm text-slate-400 leading-relaxed">FootPrintX creates passive search queries. Confirm that your target and intended research are lawful and authorized.</p><label className="flex items-start gap-3 mt-4 text-sm text-slate-300 cursor-pointer"><input aria-label="Confirm lawful authorization" type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} className="mt-1 h-5 w-5 accent-blue-500" /><span>I have authorization or a lawful basis for this research.</span></label></div></div>}

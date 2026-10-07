@@ -1,18 +1,41 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { request } from 'node:http';
+import { createServer } from 'node:net';
 import { setTimeout as delay } from 'node:timers/promises';
 import { mkdtempSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import axe from 'axe-core';
 
-const port = 4399;
-const debugPort = 9299;
-const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', String(port)], { stdio: 'ignore' });
-const chrome = spawn('/home/hermes/.local/opt/google-chrome/opt/google/chrome/chrome', ['--headless=new', '--no-sandbox', '--disable-gpu', `--remote-debugging-port=${debugPort}`, `--user-data-dir=${mkdtempSync(`${tmpdir()}/footprintx-browser-`)}`], { stdio: 'ignore' });
+const getFreePort = () => new Promise((resolve, reject) => {
+  const probe = createServer();
+  probe.once('error', reject);
+  probe.listen(0, '127.0.0.1', () => {
+    const address = probe.address();
+    if (!address || typeof address === 'string') return reject(new Error('Could not allocate an ephemeral port'));
+    const port = address.port;
+    probe.close((error) => error ? reject(error) : resolve(port));
+  });
+});
+const port = await getFreePort();
+const debugPort = await getFreePort();
+let serverFailure;
+let chromeFailure;
+const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'ignore', 'pipe'] });
+server.stderr.on('data', (chunk) => {
+  const message = chunk.toString().trim();
+  if (/address already in use|failed to bind|cannot bind|eaddrinuse/i.test(message)) serverFailure = new Error(`dev server failed to bind port ${port}: ${message}`);
+});
+server.once('exit', (code, signal) => { if (code !== 0) serverFailure ??= new Error(`dev server exited before QA (code=${code}, signal=${signal})`); });
+const chrome = spawn('/home/hermes/.local/opt/google-chrome/opt/google/chrome/chrome', ['--headless=new', '--no-sandbox', '--disable-gpu', `--remote-debugging-port=${debugPort}`, `--user-data-dir=${mkdtempSync(`${tmpdir()}/footprintx-browser-`)}`], { stdio: ['ignore', 'ignore', 'pipe'] });
+chrome.stderr.on('data', (chunk) => {
+  const message = chunk.toString().trim();
+  if (/address already in use|failed to bind|cannot bind|error while connecting/i.test(message)) chromeFailure = new Error(`Chrome failed to bind debug port ${debugPort}: ${message}`);
+});
+chrome.once('exit', (code, signal) => { if (code !== 0) chromeFailure ??= new Error(`Chrome exited before QA (code=${code}, signal=${signal})`); });
 const getJson = (path) => new Promise((resolve, reject) => { const req = request({ host: '127.0.0.1', port: debugPort, path }, (res) => { let body = ''; res.on('data', (chunk) => { body += chunk; }); res.on('end', () => resolve(JSON.parse(body))); }); req.setTimeout(1000, () => req.destroy(new Error('debug request timeout'))); req.on('error', reject); req.end(); });
-const waitFor = async (fn, timeout = 15000) => { const start = Date.now(); while (Date.now() - start < timeout) { try { return await fn(); } catch { await delay(150); } } throw new Error('Timed out'); };
+const waitFor = async (fn, timeout = 15000) => { const start = Date.now(); while (Date.now() - start < timeout) { if (serverFailure) throw serverFailure; if (chromeFailure) throw chromeFailure; try { return await fn(); } catch { await delay(150); } } throw new Error('Timed out'); };
 console.log('browser smoke: waiting for chrome and dev server');
 await waitFor(async () => { await getJson('/json/version'); });
 await waitFor(async () => { const res = await fetch(`http://127.0.0.1:${port}`); assert.equal(res.status, 200); });
@@ -32,6 +55,7 @@ await cdp('Page.navigate', { url: `http://127.0.0.1:${port}` });
 await waitFor(async () => assert.equal(await evaluate("document.querySelector('[role=dialog]')?.getAttribute('aria-modal')"), 'true'));
 assert.equal(await evaluate("document.querySelectorAll('main button, aside button').length"), 0, 'release controls must not exist before acknowledgement');
 assert.equal(await evaluate("document.activeElement?.id"), 'gate-title', 'gate heading receives initial focus');
+assert.equal(await evaluate("(() => { const heading = document.getElementById('gate-title'); heading.focus(); document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true })); return document.activeElement?.getAttribute('aria-label'); })()"), 'Confirm lawful authorization', 'reverse focus from the gate heading returns to the gate');
 await evaluate("document.querySelector('input[type=checkbox][aria-label*=lawful]').click()");
 await evaluate("document.querySelector('button:not([disabled])').click()");
 await evaluate("document.querySelector('input[type=radio]').click()");
@@ -42,8 +66,8 @@ await waitFor(async () => assert.equal(await evaluate("document.querySelector('[
 assert.equal(await evaluate("document.querySelector('h1')?.textContent?.includes('FootPrintX')"), true, 'application is available only after acknowledgement');
 await evaluate(`(async () => { ${axe.source}; window.__axeResult = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } }); return true; })()`);
 const axeResult = await evaluate('window.__axeResult');
-await mkdir('/home/hermes/Projects/Vectrionx/.task-evidence/t_8104ddc2', { recursive: true });
-await writeFile('/home/hermes/Projects/Vectrionx/.task-evidence/t_8104ddc2/axe-runtime.json', JSON.stringify({ capturedAt: new Date().toISOString(), url: `http://127.0.0.1:${port}`, engine: 'axe-core 4.10.3', result: axeResult }, null, 2));
+await mkdir('.task-evidence/t_12d27c86', { recursive: true });
+await writeFile('.task-evidence/t_12d27c86/axe-runtime.json', JSON.stringify({ capturedAt: new Date().toISOString(), url: `http://127.0.0.1:${port}`, engine: 'axe-core 4.10.3', result: axeResult }, null, 2));
 const actionableAxeViolations = axeResult.violations.flatMap((violation) => violation.nodes.filter((node) => node.any.some((check) => check.message && !check.message.startsWith('Element has sufficient color contrast')) && !node.any.some((check) => check.message === 'Element is hidden')).map((node) => violation.id));
 assert.equal(actionableAxeViolations.length, 0, `actionable axe violations: ${actionableAxeViolations.join(', ')}`);
 assert.equal(await evaluate("document.querySelector('a[href^=\"https://\"]') !== null"), true);
@@ -58,6 +82,7 @@ await evaluate("[...document.querySelectorAll('button')].find((button) => button
 await waitFor(async () => assert.equal(await evaluate("document.querySelector('input[placeholder=\"username\"]') !== null"), true), 3000);
 await evaluate("(() => { const input = document.querySelector('input[placeholder=\\\"username\\\"]'); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(input, 'authorized_test'); input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); })()");
 await waitFor(async () => assert.equal(await evaluate("document.querySelector('button[aria-label^=\"Open query in\"]') !== null"), true), 3000);
+assert.equal(await evaluate("document.querySelector('[role=region][aria-label$=\"generated query\"]')?.getAttribute('tabindex')"), '0', 'generated query region is keyboard focusable');
 await delay(100);
 assert.equal(targetRequests.length, 0, 'generation does not request a provider');
 await evaluate("document.querySelector('button[aria-label^=\"Copy\"]')?.click()");
@@ -70,6 +95,11 @@ assert.match(confirmedNavigation.href, /^https:\/\/(www\.)?(google|bing|yandex)\
 await evaluate("document.querySelector('[role=alertdialog] a[aria-label^=\"Confirm and open\"]')?.click()");
 await delay(250);
 assert.equal(providerWindowOpenEvents, 1, `exactly one user-confirmed provider navigation is emitted (observed ${providerWindowOpenEvents})`);
+await evaluate("document.querySelector('button[aria-label=\"Open navigation menu\"]')?.click(); document.querySelector('button')");
+await evaluate("[...document.querySelectorAll('button')].find((button) => button.textContent?.includes('Person Lookup'))?.click()");
+await waitFor(async () => assert.equal(await evaluate("document.querySelector('input[placeholder=\"John\"]') !== null"), true), 3000);
+await evaluate("document.querySelector('input[placeholder=\"John\"]').focus()");
+assert.deepEqual(await evaluate("(() => { const checkbox = document.querySelector('input[type=checkbox]:not([aria-label])'); checkbox.focus(); return { tabIndex: checkbox.tabIndex, visible: getComputedStyle(checkbox).display !== 'none' }; })()"), { tabIndex: 0, visible: true }, 'name-variation checkbox is keyboard reachable and visible');
 for (const width of [320, 390, 768, 1024, 1440, 1920]) {
   await cdp('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
   assert.equal(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), true, `no horizontal overflow at ${width}px`);
@@ -82,3 +112,4 @@ console.log('browser smoke: gate, focus, named controls, reduced motion, axe-rea
 ws.close();
 server.kill('SIGTERM');
 chrome.kill('SIGTERM');
+process.exit(0);

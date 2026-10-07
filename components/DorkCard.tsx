@@ -73,7 +73,7 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
               <Search className="w-4 h-4 text-slate-400 group-hover:text-blue-400" />
            </div>
            <div>
-             <h4 className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
+             <h4 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">
                {dork.title}
              </h4>
              <div className="mt-1">{getEngineBadge(dork.engine)}</div>
@@ -105,7 +105,12 @@ const DorkCard: React.FC<DorkCardProps> = ({ dork }) => {
       </p>
 
       <div className="relative mt-auto">
-        <div className="font-mono text-[11px] bg-[#05070A] p-3 rounded-lg border border-white/5 overflow-x-auto whitespace-nowrap text-blue-300 selection:bg-blue-500/30 shadow-inner group-hover:border-blue-500/20 transition-colors">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label={`${dork.title} generated query`}
+          className="font-mono text-[11px] bg-[#05070A] p-3 rounded-lg border border-white/5 overflow-x-auto whitespace-nowrap text-blue-300 selection:bg-blue-500/30 shadow-inner group-hover:border-blue-500/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+        >
           {dork.query}
         </div>
       </div>

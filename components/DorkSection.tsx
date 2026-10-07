@@ -25,7 +25,7 @@ const DorkSection: React.FC<DorkSectionProps> = ({ category }) => {
              <Layers className="w-5 h-5 text-blue-500" />
           </div>
           <div className="text-left">
-            <h3 className="font-bold text-base text-white group-hover:text-blue-400 transition-colors">
+            <h3 className="font-bold text-base text-white group-hover:text-blue-300 transition-colors">
               {category.title}
             </h3>
             <p className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
