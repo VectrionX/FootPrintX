@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .task-evidence/*/axe-runtime.json
+.task-evidence/*/*.md
 
 # Editor directories and files
 .vscode/*
